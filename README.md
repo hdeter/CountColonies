@@ -1,5 +1,5 @@
 # CountColonies
-Uses machine learning to identify and count objects (e.g. colonies on agar plates). We use Weka Segmentation (available through ImageJ) to train the classifier and classify images. The entire pipeline is run using CountColonies.py.
+Using machine learning to identify and count objects (e.g. colonies on agar plates). We use Weka Segmentation (available through ImageJ) to train the classifier and classify images. The entire pipeline is run using CountColonies.py.
 
 **Important note:** Images must be saved as name-001.tif, in which name can be any string (e.g. 050318-001.tif, plate-001.tif) and the number increases in increments of one (001, 002, etc).
 
