@@ -187,12 +187,15 @@ def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = Fal
 		
 		contours_plate = []
 		
-		platetest = np.where(CIRCLES[plate-1] !=0)
-		
-		if len(platetest) != 0:
-			GOODPLATE = True
+		if INPLATE:
+			platetest = np.where(CIRCLES[plate-1] !=0)
+
+			if platetest[0] != []:
+				GOODPLATE = True
+			else:
+				GOODPLATE = False
 		else:
-			GOODPLATE = False
+			GOODPLATE = True
 			
 		# calculate area and filter into new array
 		for con in contours:
@@ -230,9 +233,13 @@ def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = Fal
 		if SAVEIMG:
 			#pdb.set_trace()
 			fimg = np.zeros(img.shape)
-			plateimg = CIRCLES[plate-1]
+
 			cv.drawContours(fimg, contours_plate, -1, 255, 1)
-			testimg = plateimg*.5 + fimg
+			if INPLATE:
+				plateimg = CIRCLES[plate-1]
+				testimg = plateimg*.5 + fimg
+			else:
+				testimg = fimg
 			testname = 'countimg-%03d.tif' %plate
 			cv.imwrite(TESTDIR +'/'+testname, testimg)
 			
@@ -250,12 +257,12 @@ def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = Fal
 
 #main argument
 def main(argv):
-	if len(argv[0]) != None:
+	if argv[0] != None:
 		fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR = argv[0]
 		platePROCESS(fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR)
-	if len(argv[1]) != None:
+	if argv[1] != None:
 		RunWeka.batchsegment(argv[1])
-	if len(argv[2]) !=None:
+	if argv[2] !=None:
 		fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR = argv[2]
 		plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR)
 		
@@ -275,25 +282,27 @@ if __name__ == "__main__":
 	
 	#Image filename preceding channel indication (e.g. 20171212_book)
 	#must precede -%03d.tif
-	fname = '050618'
+	fname = '051218'
 	#number of images (assumes 6 plates per image)
-	nfiles = 36
+	nfiles = 32
 	OUTDIR = fname+'plates'
 	if not os.path.isdir(OUTDIR):
 		os.system('mkdir ' + OUTDIR)
 	#set to true to make individual plate images
-	iPLATES = True
+	iPLATES = False
 	#set to true to classify individual plate images
-	MASKS = True
+	MASKS = False
 	#are you counting the colonies
 	COUNT = True
 	#limit to within plates itself based on thresholding
 	INPLATE = True
-
+	
+	INDIR = '051218'
+	
 	#set to true to save contoured masks and plate outline used to get final counts
 	SAVEIMG = True
 	if SAVEIMG:
-		TESTDIR = '050618_test'
+		TESTDIR = INDIR + '_test'
 		if not os.path.isdir(TESTDIR):
 			os.system('mkdir ' + TESTDIR)
 	else:
@@ -302,7 +311,6 @@ if __name__ == "__main__":
 	if iPLATES:
 		ROIFILE = '042518_ROIs.csv'
 		ROI = processROIFile(ROIFILE)
-		INDIR = '050618'
 
 	if MASKS:
 		#location of ImageJ executable file
@@ -320,7 +328,7 @@ if __name__ == "__main__":
 		FRAMEMAX = nfiles*6
 		
 		#name of Directory to output Masks made relative to image directory
-		Mask1Dir = '050618_masks'
+		Mask1Dir = INDIR + '_masks'
 		runMask1Dir = Mask1Dir
 		
 		#classifier file relative to working directory
@@ -343,18 +351,29 @@ if __name__ == "__main__":
 
 	if COUNT:
 		if not MASKS:
-			Mask1Dir = '050618_masks'
-		CSVname = '050618_colony_count.csv'
+			Mask1Dir = INDIR + '_masks'
+		CSVname = INDIR + '_colony_count.csv'
 		
 
 				
 		#parameters to exclude labels of a certain size
 		minAREA = 10
 		maxAREA= 10000
+	
+	if iPLATES:
+		PLATEPROCESS = [fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR]
+	else:
+		PLATEPROCESS = None
+	if MASKS:
+		WekaARG2 = [IMAGEJ, Useprobability, WorkDir + '/', AlignDir + '/', runMask1Dir + '/', FIRSTFRAME, FRAMEMAX, fname, ext, classifierfile1, cores] 
+	else:
+		WekaARG2 = None
+	if COUNT:
+		PLATECOUNT = [fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR]
+	else:
+		PLATECOUNT = None
 
-	PLATEPROCESS = [fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR]
-	WekaARG2 = [IMAGEJ, Useprobability, WorkDir + '/', AlignDir + '/', runMask1Dir + '/', FIRSTFRAME, FRAMEMAX, fname, ext, classifierfile1, cores] 
-	PLATECOUNT = [fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR]
+main([PLATEPROCESS,WekaARG2,PLATECOUNT])
 #######################################################################
 #######################################################################
 
