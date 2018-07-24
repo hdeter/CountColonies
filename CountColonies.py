@@ -87,7 +87,9 @@ else:
 	MASKS = True
 COUNT = bool_input('Do you wish to count the number of colonies (Y/N): ')
 if COUNT:
-	INPLATE = bool_input('Do you wish to exclude the edges of the plate (Y/N): ')
+	#method uses threshold to identify plates and exclude edges; does not always work so for consistency it is set to False
+	#INPLATE = bool_input('Do you wish to exclude the edges of the plate (Y/N): ')
+	INPLATE = False
 else:
 	INPLATE = False
 SAVEIMG = bool_input('Do you wish to save an image with counted colonies outlined (Y/N): ')
