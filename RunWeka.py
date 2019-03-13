@@ -42,7 +42,12 @@ def training(argv):
 	IJMSCRIPT = 'Segmentation.ijm'
 	IJMSCRIPT = homedir + IJMSCRIPT
 	#run ImageJ macro to train classifier
-	MACRO_FMT = IMAGEJ + ' --console -macro ' + IJMSCRIPT
+	OPEN_FMT = IMAGEJ + ' -port2 1> /dev/null 2> /dev/null &'
+	print OPEN_FMT
+	print 'opening ImageJ'
+	MACRO_FMT = IMAGEJ + ' --console -macro ' + IJMSCRIPT + ' -port2'
+	os.system(OPEN_FMT)
+	time.sleep(5)
 	os.system(MACRO_FMT)
 
 ############################################################################
