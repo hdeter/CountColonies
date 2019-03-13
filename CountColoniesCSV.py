@@ -234,13 +234,6 @@ if MASKS:
 	if not CLASSIFIER:
 		#to use with RunWeka.training
 		WekaARG1 = [IMAGEJ, WorkDir + '/']
-		openFiji = False
-		while not openFiji:
-			print 'Please open an instance of Fiji. '
-			time.sleep(2)
-			openFiji = bool_input('Is there an open instance of Fiji (Y/N):')
-			if not openFiji:
-				print 'Please open Fiji'
 		RunWeka.training(WekaARG1)
 
 	if 'linux' in IMAGEJ:
