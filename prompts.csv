@@ -1,17 +1,17 @@
 Prompt,Answer
 Are there multiple plates in your images (Y/N):,Y
-Do you need to classify the images (Y/N):,Y
+Do you need to classify the images (Y/N):,N
 Do you wish to count the number of colonies (Y/N):,Y
 Do you wish to save an image with counted colonies outlined (Y/N):,Y
-Enter the name of the directory (relative to the working directory) containing the images to process:,102718
-Enter the filename preceding "-plate number" (e.g. 050318):,102718
-How many images are there?:,11
-Please enter the path (relative to the working directory) to the CSV file containing ROIs for individual plates (e.g. 042518_ROIs.csv):,102718_roi.csv
+Enter the name of the directory (relative to the working directory) containing the images to process:,050319
+Enter the filename preceding "-plate number" (e.g. 050318):,050319
+How many images are there?:,14
+Please enter the path (relative to the working directory) to the CSV file containing ROIs for individual plates (e.g. 042518_ROIs.csv):,022519_roi.csv
 Enter absolute path to ImageJ executable file (e.g. /media/shared/drive/programs/newFiji/Fiji.app/ImageJ-linux64):,/media/shared/drive/programs/newFiji/Fiji.app/ImageJ-linux64
 Do you have a trained classifier (Y/N):,Y
 Would you like to batch classify the images in the background (it is faster Y/N):,Y
 How many processes are available to use for multiprocessing (set to 1 for no multiprocessing):,21
 Enter path to classifier relative to working directory (e.g. 022218_colonies2.model):,022218_colonies2.model
-Enter path to directory (relative to the working directory) containing binary masks of plates (e.g. 050318_masks):,102718_masks
+Enter path to directory (relative to the working directory) containing binary masks of plates (e.g. 050318_masks):,040619_masks
 Enter the minimum area to count (e.g. 10):,10
 Enter the max area to count (e.g. 10000):,10000

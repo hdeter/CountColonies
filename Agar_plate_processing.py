@@ -11,7 +11,7 @@ import math
 import scipy.ndimage as ndimage
 import scipy.misc as misc
 
-from StringIO import StringIO
+from io import StringIO
 
 import matplotlib as mpl
 # mpl.use('Agg')  # optimization for faster rendering than Agg (at least, it is supposed to be)
@@ -24,7 +24,7 @@ from numpy.fft import fft2,ifft2
 
 import pdb
 
-import cPickle as pickle
+import pickle as pickle
 
 import RunWeka
 #######################################################################
@@ -64,8 +64,8 @@ def IDplate(filename):
 	PlateXY = []
 	#label image and get lable xy locations
 	label, nlabels = ndimage.label(pmask)
-	comXY = ndimage.center_of_mass(label*0 + 1.0, label, range(nlabels))
-	AREA = ndimage.sum(label*0 + 1.0, label, range(nlabels))
+	comXY = ndimage.center_of_mass(label*0 + 1.0, label, list(range(nlabels)))
+	AREA = ndimage.sum(label*0 + 1.0, label, list(range(nlabels)))
 
 
 	#print AREA.shape[0]
@@ -106,13 +106,8 @@ def getROI(img,roi,bDisplay=False):
 ####################################################################
 #make array from ROIFile
 def processROIFile(ROIFILE):
-	#print 'TRYING TO IMPORT ROI:', ROIFILE
-	ROITXT = open(ROIFILE, 'rb').read()
-
-	# trick for newline problems
-	ROITXT = StringIO(ROITXT.replace('\r','\n\r'))
-
-	ROI = np.loadtxt(ROITXT, delimiter=",",skiprows=1, dtype='int')
+	
+	ROI = np.loadtxt(ROIFILE, delimiter=",",skiprows=1, dtype='int')
 	#print 'IMPORTED ROI\'S'
 
 	ROI = np.reshape(ROI, (-1,5))
@@ -128,7 +123,7 @@ def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = Fals
 	CIRCLES = []
 	for pic in range(1,nfiles+1):
 		filename = INDIR + '/' + fname + '-%03d.tif' % pic
-		print filename
+		print(filename)
 		img = imgLoad(filename, 1)
 		
 		
@@ -152,7 +147,7 @@ def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = Fals
 			#cv.imwrite(OUTDIR + '/' + 'test2.tif', img)
 	
 	if INPLATE:		
-		with open(fname + '_platecircles.pkl', 'wb') as f:
+		with open(fname + '_platecircles.pkl', 'w') as f:
 			pickle.dump(CIRCLES, f, protocol=pickle.HIGHEST_PROTOCOL)
 		
  
@@ -173,13 +168,13 @@ def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = Fal
 	#go through masks and count colonies and write counts to csv file
 	
 	#Colonies = np.empty[nfiles*6,2]
-	f = open(CSVname, 'wb')
+	f = open(CSVname, 'w')
 	f.write('Plate,')
 	f.write('Colonies,')
 	f.write('\n')
 		
 	for plate in range(1,nfiles*6+1):
-		print 'processing plate ', plate
+		print('processing plate ', plate)
 		filename = Mask1Dir + '/' + fname + '-%03d.png' % plate
 		img = imgLoad(filename, 1)
 		img = 255-img
@@ -373,7 +368,7 @@ if __name__ == "__main__":
 	else:
 		PLATECOUNT = None
 
-main([PLATEPROCESS,WekaARG2,PLATECOUNT])
+	main([PLATEPROCESS,WekaARG2,PLATECOUNT])
 #######################################################################
 #######################################################################
 

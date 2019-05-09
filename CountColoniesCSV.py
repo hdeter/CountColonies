@@ -4,7 +4,7 @@ import sys
 import os
 import time
 from multiprocessing import Pool
-from StringIO import StringIO
+from io import StringIO
 import numpy as np
 import pdb
 
@@ -15,70 +15,61 @@ import RunWeka
 #######################################################################
 #######################################################################
 
-def processCSV(CSVFILE):
-    print 'Processing ' + CSVFILE
-    TXT = open(CSVFILE, 'rb').read()
-
-    # trick for newline problems
-    TXT = StringIO(TXT.replace('\r','\n\r'))
-    TXT2 = TXT
-    #method that removes headers
-    CSV = np.genfromtxt(TXT, delimiter=",",skip_header=1, dtype='str')  
-    rows = CSV.shape[0]
-    
-    print 'process complete'
-    
-    return CSV
-
-############################################################################
-############################################################################
-
+#search and return answer to prompt
+##default is to return second column
 def FindPrompt(Prompt,loc = 1):
 	row = np.where(PROMPTS[:,0] == Prompt)[0]
-	print Prompt, PROMPTS[row,loc][0]
-	return PROMPTS[row,loc][0]
+	try:
+		print(Prompt, PROMPTS[row,loc][0])
+		return PROMPTS[row,loc][0]
+	except:
+		return None
 
 ############################################################################
 ############################################################################
 
 # helper function for input
 def text_input(DISPLAY,loc=1):
+	string = ''
 	if CSVPrompt:
-		return str(FindPrompt(DISPLAY,loc))
-	else:
-		string = ''
-		while (string == ''):
-			string = raw_input(DISPLAY)	
-		return string
+		prompt = FindPrompt(DISPLAY,loc)
+		if not (prompt is None):
+			string = str(prompt)
+	while (string == ''):
+		string = input(DISPLAY)
+	return string
 		
 def raw_text_input(DISPLAY):
 	str = ''
 	while (str == ''):
-		str = raw_input(DISPLAY)	
+		str = input(DISPLAY)	
 	return str
 	
 # helper function for input
 def bool_input(DISPLAY):
+	bValue = None
 	if CSVPrompt:
-		if (FindPrompt(DISPLAY) == 'y' or FindPrompt(DISPLAY) == 'Y'): 
-			return True
-		else: 
-			return False
-	else:
-		bValue = None
-		while (bValue is None):
-			str = raw_input(DISPLAY)
-			if (str=='y' or str=='Y'):
+		prompt = FindPrompt(DISPLAY)
+		if not (prompt is None):
+			if (prompt == 'y' or prompt == 'Y'): 
 				bValue = True
-			elif (str=='n' or str=='N'):
+			else: 
 				bValue = False
-		return bValue
+
+	while (bValue is None):
+		str = input(DISPLAY)
+		if (str=='y' or str=='Y'):
+			bValue = True
+		elif (str=='n' or str=='N'):
+			bValue = False
+			
+	return bValue
 
 # helper function for input
 def raw_bool_input(DISPLAY):
 	bValue = None
 	while (bValue is None):
-		str = raw_input(DISPLAY)
+		str = input(DISPLAY)
 		if (str=='y' or str=='Y'):
 			bValue = True
 		elif (str=='n' or str=='N'):
@@ -87,31 +78,41 @@ def raw_bool_input(DISPLAY):
 
 # helper function for input
 def int_input(DISPLAY, loc = 1):
+	iValue = None
 	if CSVPrompt:
-		return int(FindPrompt(DISPLAY,loc))
-	else:
-		iValue = None
-		while (iValue is None):
-			str = raw_input(DISPLAY)
+		prompt = FindPrompt(DISPLAY,loc)
+		if not (prompt is None):
 			try:
-				iValue = int(str)
+				iValue = int(prompt)
 			except:
 				iValue = None
-		return iValue
+			
+	while (iValue is None):
+		str = input(DISPLAY)
+		try:
+			iValue = int(str)
+		except:
+			iValue = None
+	return iValue
 	
 # helper function for input
 def float_input(DISPLAY):
+	iValue = None
 	if CSVPrompt:
-		return float(FindPrompt(DISPLAY))
-	else:
-		iValue = None
-		while (iValue is None):
-			str = raw_input(DISPLAY)
+		prompt = FindPrompt(DISPLAY)
+		if not (prompt is None):
 			try:
-				iValue = float(str)
+				iValue = float(prompt)
 			except:
 				iValue = None
-		return iValue
+
+	while (iValue is None):
+		str = input(DISPLAY)
+		try:
+			iValue = float(str)
+		except:
+			iValue = None
+	return iValue
 ####################################################################
 ####################################################################
 
@@ -121,14 +122,14 @@ def getfilename(prompt):
 	FILENAME = text_input(prompt)
 	ISFILE = os.path.isfile(FILENAME)
 	if not ISFILE:
-		print 'cannot find file'
+		print('cannot find file')
 	
 	#assume prompt answer was wrong and reprompt question in terminal
 	while not ISFILE:
 		FILENAME = text_input(prompt)
 		ISFILE = os.path.isfile(FILENAME)
 		if not ISFILE:
-			print 'cannot find file'
+			print('cannot find file')
 	return FILENAME
 	
 def getdirname(prompt):
@@ -137,14 +138,14 @@ def getdirname(prompt):
 	PATHNAME = text_input(prompt)
 	ISPATH = os.path.isdir(PATHNAME)
 	if not ISPATH:
-		print 'cannot find directory ' + PATHNAME
+		print('cannot find directory ' + PATHNAME)
 	
 	#assume prompt answers was wrong and reprompt question in terminal
 	while not ISPATH:
 		PATHNAME = raw_text_input(prompt)
 		ISPATH = os.path.isdir(PATHNAME)
 		if not ISPATH:
-			print 'cannot find directory ' + PATHNAME
+			print('cannot find directory ' + PATHNAME)
 	return PATHNAME
 
 #this one just used for prompt file
@@ -154,9 +155,8 @@ def getcsvname(prompt):
 		FILENAME = raw_text_input(prompt)
 		ISFILE = os.path.isfile(FILENAME)
 		if not ISFILE:
-			print 'cannot find file ' + FILENAME
+			print('cannot find file ' + FILENAME)
 	return FILENAME
-
 ####################################################################
 ####################################################################
 ####################################################################
@@ -167,8 +167,8 @@ CSVPrompt = bool_input('Do you have a csv file with prompted answers? (Y/N):')
 #~ print CSVPrompt
 if CSVPrompt:
 	PROMPTCSV = getcsvname('Enter the filename of the csv file containing prompted answers relative to the working directory (e.g. prompts.csv):')
-	PROMPTS = processCSV(PROMPTCSV)
-	
+	PROMPTS = np.genfromtxt(PROMPTCSV, delimiter=",",skip_header=1, dtype='str') 
+	#~ print(PROMPTS.shape)
 ####################################################################
 ####################################################################
 
@@ -187,7 +187,7 @@ SAVEIMG = bool_input('Do you wish to save an image with counted colonies outline
 
 #get working directory
 WorkDir = os.getcwd()
-print 'Your working directory is ', WorkDir
+print('Your working directory is ', WorkDir)
 
 INDIR = getdirname('Enter the name of the directory (relative to the working directory) containing the images to process:')
 FNAMECHECK = False
@@ -195,14 +195,14 @@ while not FNAMECHECK:
 	fname = text_input('Enter the filename preceding "-plate number" (e.g. 050318):')
 	FNAMECHECK = os.path.isfile(INDIR + '/' + fname + '-001.tif')
 	if not FNAMECHECK:
-		print 'Could not find file ', fname + '-001.tif', ' in ', INDIR
+		print('Could not find file ', fname + '-001.tif', ' in ', INDIR)
 NFILECHECK = False
 while not NFILECHECK:
 	nfiles = int_input('How many images are there?:')
 	nfilename = fname + '-%03d.tif' %nfiles
 	NFILECHECK = os.path.isfile(INDIR + '/' + nfilename)
 	if not NFILECHECK:
-		print 'could not find file:', nfilename, ' in ', INDIR
+		print('could not find file:', nfilename, ' in ', INDIR)
 OUTDIR = INDIR + '_plates'
 if not os.path.isdir(OUTDIR):
 	os.system('mkdir ' + OUTDIR)
@@ -217,9 +217,10 @@ else:
 if iPLATES:
 	ROIFILE = getfilename('Please enter the path (relative to the working directory) to the CSV file containing ROIs for individual plates (e.g. 042518_ROIs.csv):')
 	ROI = Agar_plate_processing.processROIFile(ROIFILE)
-	PLATEPROCESS = fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR
+	PLATEPROCESS = [fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR]
 else:
 	PLATEPROCESS = None
+	
 if MASKS:
 	IJPATH = False
 	while not IJPATH:
@@ -227,7 +228,7 @@ if MASKS:
 		IJPATH = os.path.isfile(IMAGEJ)
 		IJEX = os.access(IMAGEJ,os.X_OK)
 		if not IJPATH and IJEX:
-			print 'could not find application'
+			print('could not find application')
 
 	
 	CLASSIFIER = bool_input('Do you have a trained classifier (Y/N):')
@@ -273,15 +274,17 @@ if MASKS:
 	if not os.path.isdir(runMask1Dir):
 		os.system('mkdir ' + runMask1Dir)
 	WekaARG2 = [IMAGEJ, Useprobability, WorkDir + '/', AlignDir + '/', runMask1Dir + '/', FIRSTFRAME, FRAMEMAX, fname, ext, classifierfile1, cores] 
+	
 else:
 	WekaARG2 = None
+	
 if COUNT:
 	if not MASKS:
 		Mask1Dir = getdirname('Enter path to directory (relative to the working directory) containing binary masks of plates (e.g. 050318_masks):')
 	CSVname = INDIR + '_colony_count.csv'
 	minAREA = int_input('Enter the minimum area to count (e.g. 10):')
 	maxAREA = int_input('Enter the max area to count (e.g. 10000):')
-	PLATECOUNT = fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR
+	PLATECOUNT = [fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR]
 else:
 	PLATECOUNT = None
 

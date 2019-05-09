@@ -12,14 +12,14 @@ import pdb
 def text_input(DISPLAY):
 	str = ''
 	while (str == ''):
-		str = raw_input(DISPLAY)	
+		str = input(DISPLAY)	
 	return str
 	
 # helper function for input
 def bool_input(DISPLAY):
 	bValue = None
 	while (bValue is None):
-		str = raw_input(DISPLAY)
+		str = input(DISPLAY)
 		if (str=='y' or str=='Y'):
 			bValue = True
 		elif (str=='n' or str=='N'):
@@ -42,12 +42,7 @@ def training(argv):
 	IJMSCRIPT = 'Segmentation.ijm'
 	IJMSCRIPT = homedir + IJMSCRIPT
 	#run ImageJ macro to train classifier
-	OPEN_FMT = IMAGEJ + ' -port2 1> /dev/null 2> /dev/null &'
-	print OPEN_FMT
-	print 'opening ImageJ'
-	MACRO_FMT = IMAGEJ + ' --console -macro ' + IJMSCRIPT + ' -port2'
-	os.system(OPEN_FMT)
-	time.sleep(5)
+	MACRO_FMT = IMAGEJ + ' --console -macro ' + IJMSCRIPT
 	os.system(MACRO_FMT)
 
 ############################################################################
@@ -137,20 +132,20 @@ def batchsegment(argv):
 		else:
 			images = len(imgfiles) - len(maskfiles)
 			if i % 2 == 1:
-				print '\\ classifying %03d images' %images
+				print('\\ classifying %03d images' %images)
 				sys.stdout.write(CURSOR_UP_ONE) 
 			else:
-				print '/ classifying %03d images' %images
+				print('/ classifying %03d images' %images)
 				sys.stdout.write(CURSOR_UP_ONE) 
-	print 'finished classification                    '
+	print('finished classification                    ')
 		
 ############################################################################
 ############################################################################
 
 if __name__ == "__main__":
-	print sys.argv
+	print(sys.argv)
 	if len(sys.argv) == 1:
-		print 'Please include additional argument /n training: if training a classifier n/ batch: if applying a classifier'
+		print('Please include additional argument /n training: if training a classifier n/ batch: if applying a classifier')
 	elif len(sys.argv) > 2:
 		main(sys.argv[1:])
 	else:
@@ -166,7 +161,7 @@ if __name__ == "__main__":
 			while not openFiji:
 				openFiji = bool_input('Is there an open instance of Fiji (Y/N): ')
 				if not openFiji:
-					print 'Please open Fiji'
+					print('Please open Fiji')
 			WekaARG1 = [IMAGEJ, WorkDir + '/']
 			training(WekaARG1)
 		else:
