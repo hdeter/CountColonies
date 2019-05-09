@@ -18,6 +18,9 @@ The Butzin lab (https://sites.google.com/site/nicholascbutzin/) uses these scrip
 3. Enter the command "python CountColonyCSV.py"
 4. Follow the prompts in the terminal
 
+**Training a classifier**
+A classifier is trained through the Trainable Weka Segmentation plugin in Fiji (https://imagej.net/Trainable_Weka_Segmentation). The training pipeline can be run through CountColonyCSV.py or by running Segmentation.ijm directly in Fiji. 
+
 **Using the prompts file:**
 There is an option to use a csv file to answer the prompts rather than answering them in the terminal. It requires that the first column of the file match the prompts exactly, and as such a template file is provided (prompts.csv). The prompts may then be answered in the second column as one would respond in the terminal.
 
