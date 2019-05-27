@@ -31,7 +31,7 @@ filename= getString("Filename of image to classify preceding number", "040518-")
 
 //ext = getString("File type of images (e.g. tif)", "tif");
 //ext = "." + ext
-ext = "."+ "tif"
+ext = "."+ "tif";
 ///////////////////////////////////
 ///////////////////////////////////
 

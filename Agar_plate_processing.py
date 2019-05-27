@@ -40,6 +40,15 @@ def imgLoad(fname,scale):
 		img = cv.imread(fname,cv.IMREAD_GRAYSCALE)
 	img = scaleDown(img,scale)
 	return img
+	
+def imgColorLoad(fname,scale):
+	#~ img = cv.imread(fname,cv.IMREAD_ANYDEPTH)
+	img = cv.imread(fname,cv.IMREAD_COLOR)
+	#rarely, imread fails, so we try again
+	if (img is None):
+		img = cv.imread(fname,cv.IMREAD_GRAYSCALE)
+	img = scaleDown(img,scale)
+	return img
 
 # scale an image and return it
 def scaleDown(img,scale):
@@ -119,12 +128,15 @@ def processROIFile(ROIFILE):
 #######################################################################
 
 #go through images and make new image for each plate
-def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = False, TESTDIR = None):
+def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = False, TESTDIR = None, RED = False):
 	CIRCLES = []
 	for pic in range(1,nfiles+1):
 		filename = INDIR + '/' + fname + '-%03d.tif' % pic
 		print(filename)
-		img = imgLoad(filename, 1)
+		if RED:
+			img = imgColorLoad(filename, 1)
+		else:
+			img = imgLoad(filename, 1)
 		
 		
 		if INPLATE:
@@ -134,10 +146,14 @@ def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = Fals
 				cv.imwrite(TESTDIR + '/' + circlename, circle)
 		
 		i = 0
+		#print(ROI.shape)
 		for roi in ROI:
 			i  +=1
 			iplate = getROI(img,roi)
 			iplatename = fname + '-%03d.tif' % ((pic-1)*6+i)
+			if RED:
+				#print('getting red channel')
+				iplate = iplate[:,:,2]
 			cv.imwrite(OUTDIR + '/' + iplatename, iplate)
 			
 			if INPLATE:
@@ -173,7 +189,7 @@ def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = Fal
 	f.write('Colonies,')
 	f.write('\n')
 		
-	for plate in range(1,nfiles*6+1):
+	for plate in range(1,nfiles*+1):
 		print('processing plate ', plate)
 		filename = Mask1Dir + '/' + fname + '-%03d.png' % plate
 		img = imgLoad(filename, 1)
@@ -253,8 +269,8 @@ def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = Fal
 #main argument
 def main(argv):
 	if argv[0] != None:
-		fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR = argv[0]
-		platePROCESS(fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR)
+		fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR,RED = argv[0]
+		platePROCESS(fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR,RED)
 	if argv[1] != None:
 		RunWeka.batchsegment(argv[1])
 	if argv[2] !=None:
@@ -306,6 +322,7 @@ if __name__ == "__main__":
 	if iPLATES:
 		ROIFILE = '042518_ROIs.csv'
 		ROI = processROIFile(ROIFILE)
+		RED = False
 
 	if MASKS:
 		#location of ImageJ executable file
@@ -356,7 +373,7 @@ if __name__ == "__main__":
 		maxAREA= 10000
 	
 	if iPLATES:
-		PLATEPROCESS = [fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR]
+		PLATEPROCESS = [fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR,RED]
 	else:
 		PLATEPROCESS = None
 	if MASKS:

@@ -217,7 +217,10 @@ else:
 if iPLATES:
 	ROIFILE = getfilename('Please enter the path (relative to the working directory) to the CSV file containing ROIs for individual plates (e.g. 042518_ROIs.csv):')
 	ROI = Agar_plate_processing.processROIFile(ROIFILE)
-	PLATEPROCESS = [fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR]
+	RED = bool_input('Would you like to isolate the red channel (Y/N):')
+	PLATEPROCESS = [fname,nfiles,INDIR,OUTDIR,ROI,INPLATE, SAVEIMG, TESTDIR,RED]
+	ARG = [PLATEPROCESS,None,None]
+	Agar_plate_processing.run(ARG)
 else:
 	PLATEPROCESS = None
 	
@@ -290,5 +293,5 @@ else:
 
 
 
-ARG = [PLATEPROCESS,WekaARG2,PLATECOUNT]
+ARG = [None,WekaARG2,PLATECOUNT]
 Agar_plate_processing.run(ARG)
