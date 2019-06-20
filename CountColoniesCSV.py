@@ -2,6 +2,7 @@
 import string
 import sys
 import os
+import glob
 import time
 from multiprocessing import Pool
 from io import StringIO
@@ -123,10 +124,9 @@ def getfilename(prompt):
 	ISFILE = os.path.isfile(FILENAME)
 	if not ISFILE:
 		print('cannot find file')
-	
 	#assume prompt answer was wrong and reprompt question in terminal
 	while not ISFILE:
-		FILENAME = text_input(prompt)
+		FILENAME = raw_text_input(prompt)
 		ISFILE = os.path.isfile(FILENAME)
 		if not ISFILE:
 			print('cannot find file')
@@ -255,15 +255,16 @@ if MASKS:
 	else:
 		ImageDir = INDIR
 	AlignDir = ImageDir
-	
-	#first frame of images
-	FIRSTFRAME = 1
-	#last frame of images
-	FRAMEMAX = nfiles*6
-	
 	#name of Directory to output Masks made relative to image directory
 	Mask1Dir = INDIR + '_masks'
 	runMask1Dir = Mask1Dir
+		
+	#first frame of images
+	FIRSTFRAME = 1
+	#last frame of images
+	FRAMEMAX = len(glob.glob(AlignDir+'/*.tif'))
+	if FRAMEMAX == 0:
+		FRAMEMAX = len(glob.glob(Mask1Dir+'/*.png'))
 	
 	#classifier file relative to working directory
 	classifierfile1 = getfilename('Enter path to classifier relative to working directory (e.g. 022218_colonies2.model):')
@@ -277,21 +278,23 @@ if MASKS:
 	if not os.path.isdir(runMask1Dir):
 		os.system('mkdir ' + runMask1Dir)
 	WekaARG2 = [IMAGEJ, Useprobability, WorkDir + '/', AlignDir + '/', runMask1Dir + '/', FIRSTFRAME, FRAMEMAX, fname, ext, classifierfile1, cores] 
-	
+	#~ WekaARG2 = None
 else:
 	WekaARG2 = None
 	
 if COUNT:
 	if not MASKS:
 		Mask1Dir = getdirname('Enter path to directory (relative to the working directory) containing binary masks of plates (e.g. 050318_masks):')
+	maskfiles = len(glob.glob(Mask1Dir+'/*.tif'))
+	if maskfiles == 0:
+		maskfiles = len(glob.glob(Mask1Dir+'/*.png'))
 	CSVname = INDIR + '_colony_count.csv'
 	minAREA = int_input('Enter the minimum area to count (e.g. 10):')
 	maxAREA = int_input('Enter the max area to count (e.g. 10000):')
-	PLATECOUNT = [fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR]
+	PLATECOUNT = [fname, maskfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE, SAVEIMG, TESTDIR]
 else:
 	PLATECOUNT = None
 
-
-
-ARG = [None,WekaARG2,PLATECOUNT]
+print(PLATECOUNT)
+ARG = [PLATEPROCESS,WekaARG2,PLATECOUNT]
 Agar_plate_processing.run(ARG)

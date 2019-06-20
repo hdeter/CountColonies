@@ -132,7 +132,7 @@ def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = Fals
 	CIRCLES = []
 	for pic in range(1,nfiles+1):
 		filename = INDIR + '/' + fname + '-%03d.tif' % pic
-		print(filename)
+		#~ print(filename)
 		if RED:
 			img = imgColorLoad(filename, 1)
 		else:
@@ -172,7 +172,7 @@ def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = Fals
 #######################################################################
 
 def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = False, SAVEIMG = False, TESTDIR = None):
-	
+	print(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname)
 	#load CIRCLE ROIs
 	if INPLATE:
 		INPLATE = os.path.isfile(fname+'_platecircles.pkl')
@@ -189,7 +189,7 @@ def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = Fal
 	f.write('Colonies,')
 	f.write('\n')
 		
-	for plate in range(1,nfiles*+1):
+	for plate in range(1,nfiles+1):
 		print('processing plate ', plate)
 		filename = Mask1Dir + '/' + fname + '-%03d.png' % plate
 		img = imgLoad(filename, 1)

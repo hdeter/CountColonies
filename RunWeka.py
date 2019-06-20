@@ -127,7 +127,7 @@ def batchsegment(argv):
 	#check number of files in output directory until processes are complete
 	i = 0
 	CURSOR_UP_ONE = '\x1b[1A'
-	imgfiles = glob.glob(imgdir + '/' + fimageInFmt + '*')
+	imgfiles = glob.glob(imgdir + '/*' + fimageInFmt + '*' + ext)
 	while PROCESS:
 		i += 1
 		time.sleep(1)
