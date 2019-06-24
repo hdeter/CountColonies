@@ -124,9 +124,10 @@ def getfilename(prompt):
 	ISFILE = os.path.isfile(FILENAME)
 	if not ISFILE:
 		print('cannot find file')
+	
 	#assume prompt answer was wrong and reprompt question in terminal
 	while not ISFILE:
-		FILENAME = raw_text_input(prompt)
+		FILENAME = text_input(prompt)
 		ISFILE = os.path.isfile(FILENAME)
 		if not ISFILE:
 			print('cannot find file')
