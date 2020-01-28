@@ -35,6 +35,9 @@ There is an option to count multiple plates (i.e. regions of interest) within a 
 
 The final table should have five columns. Left to right: ROI number, BX, BY, Width and Height. BX and BY indicate the X and Y  coordinates for the top left corner of the selection.
 
+**Citation information**
+Please cite Deter et al. ACS Synth. Biol. 2020, 9, 1, 95-103 (https://doi.org/10.1021/acssynbio.9b00358)
+
 **Contact information:**
 Heather S. Deter. Graduate Assistant, South Dakota State University. Email: hdeter2013@gmail.com
 
