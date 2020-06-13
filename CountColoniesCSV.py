@@ -95,7 +95,20 @@ def int_input(DISPLAY, loc = 1):
 		except:
 			iValue = None
 	return iValue
+
+def raw_int_input(DISPLAY, loc = 1):
+	iValue = None
+
+	while (iValue is None):
+		str = input(DISPLAY)
+		try:
+			iValue = int(str)
+		except:
+			iValue = None
+	return iValue
 	
+
+
 # helper function for input
 def float_input(DISPLAY):
 	iValue = None
@@ -286,9 +299,11 @@ else:
 if COUNT:
 	if not MASKS:
 		Mask1Dir = getdirname('Enter path to directory (relative to the working directory) containing binary masks of plates (e.g. 050318_masks):')
-	maskfiles = len(glob.glob(Mask1Dir+'/*.tif'))
-	if maskfiles == 0:
-		maskfiles = len(glob.glob(Mask1Dir+'/*.png'))
+		maskfiles = len(glob.glob(Mask1Dir+'/*.tif'))
+		if maskfiles == 0:
+			maskfiles = len(glob.glob(Mask1Dir+'/*.png'))
+	else:
+		maskfiles = FRAMEMAX
 	CSVname = INDIR + '_colony_count.csv'
 	minAREA = int_input('Enter the minimum area to count (e.g. 10):')
 	maxAREA = int_input('Enter the max area to count (e.g. 10000):')
