@@ -130,6 +130,7 @@ def processROIFile(ROIFILE):
 #go through images and make new image for each plate
 def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = False, TESTDIR = None, RED = False):
 	CIRCLES = []
+	i = 0
 	for pic in range(1,nfiles+1):
 		filename = INDIR + '/' + fname + '-%03d.tif' % pic
 		#~ print(filename)
@@ -145,12 +146,12 @@ def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = Fals
 				circlename = 'circles-%03d.tif' %pic
 				cv.imwrite(TESTDIR + '/' + circlename, circle)
 		
-		i = 0
+		
 		#print(ROI.shape)
 		for roi in ROI:
 			i  +=1
 			iplate = getROI(img,roi)
-			iplatename = fname + '-%03d.tif' % ((pic-1)*6+i)
+			iplatename = fname + '-%03d.tif' % (i)
 			if RED:
 				#print('getting red channel')
 				iplate = iplate[:,:,2]
@@ -172,6 +173,10 @@ def platePROCESS (fname, nfiles,INDIR,OUTDIR,ROI,INPLATE = False, SAVEIMG = Fals
 #######################################################################
 
 def plateCOUNT(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname, INPLATE = False, SAVEIMG = False, TESTDIR = None):
+	if nfiles == 0:
+		nfiles = len(glob.glob(Mask1Dir+'/*.tif'))
+		if nfiles == 0:
+			nfiles = len(glob.glob(Mask1Dir+'/*.png'))
 	print(fname, nfiles, Mask1Dir, minAREA, maxAREA, CSVname)
 	#load CIRCLE ROIs
 	if INPLATE:
